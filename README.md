@@ -49,7 +49,6 @@ repo-chat/
 
 
 
-
 🛠 Kurulum
 Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin.
 
@@ -64,7 +63,7 @@ Ollama (Modeli çalıştırmak için gereklidir. İndir)
 Bash
 
 # 1. Repoyu klonlayın
-git clone [https://github.com/talh4kaya/repo-chat.git](https://github.com/talh4kaya/repo-chat.git)
+git clone https://github.com/talh4kaya/repo-chat.git
 cd repo-chat
 
 # 2. Sanal ortam oluşturun
@@ -115,6 +114,7 @@ Vector Store (Hafıza): Vektörler ChromaDB içinde saklanır.
 Retrieval & Chat: Kullanıcı sorusu ile en alakalı kod parçaları bulunur ve Llama 3 modeline gönderilir.
 
 📊 Akış Şeması
+Kod snippet'i
 
 graph TD;
     A[GitHub Repo] -->|Clone| B(Kod Dosyaları);
@@ -125,8 +125,6 @@ graph TD;
     F -->|Cevap| G[Streamlit Arayüz];
     style D fill:#f9f,stroke:#333,stroke-width:2px
     style F fill:#bbf,stroke:#333,stroke-width:2px
-
-
 🤝 Katkıda Bulunma
 Bu proje açık kaynaklıdır. Önerilerinizi ve hata bildirimlerinizi Issue açarak veya Pull Request göndererek iletebilirsiniz.
 

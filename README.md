@@ -1,314 +1,121 @@
-# 🧠 Repo-Chat: Local RAG with Llama 3
+# 🧠 Repo-Chat: Privacy-First Local RAG Assistant
 
-![Python](https://img.shields.io/badge/Python-3.9-blue.svg)
-![LangChain](https://img.shields.io/badge/LangChain-0.3-green.svg)
-![Ollama](https://img.shields.io/badge/Model-Llama3-orange.svg)
-![Streamlit](https://img.shields.io/badge/UI-Streamlit-red.svg)
+<div align="center">
 
-**Repo-Chat**, GitHub üzerindeki herhangi bir kod tabanını indirip analiz eden ve **yerel yapay zeka (Local LLM)** kullanarak kodlarınızla sohbet etmenizi sağlayan bir RAG (Retrieval-Augmented Generation) asistanıdır.
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=for-the-badge&logo=python&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-0.3-green?style=for-the-badge&logo=chainlink&logoColor=white)
+![Ollama](https://img.shields.io/badge/Model-Llama3-orange?style=for-the-badge&logo=meta&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red?style=for-the-badge&logo=streamlit&logoColor=white)
+![ChromaDB](https://img.shields.io/badge/VectorDB-Chroma-purple?style=for-the-badge)
 
-Bu proje, verilerinizi 3. parti sunuculara (OpenAI vb.) göndermeden, tamamen kendi bilgisayarınızda (Offline & Private) çalışır.
+<br>
 
----
+**Kendi bilgisayarınızda çalışan, internet gerektirmeyen ve kodlarınızı analiz eden kişisel Yapay Zeka Asistanınız.**
 
-## 🚀 Özellikler
+[Kurulum](#-kurulum) • [Kullanım](#-kullanım) • [Mimari](#-mimari-ve-çalışma-mantığı) • [Katkıda Bulunma](#-katkıda-bulunma)
 
-* **🔒 %100 Gizlilik:** Kodlarınız bilgisayarınızdan dışarı çıkmaz.
-* **🧠 Llama 3 Gücü:** Meta'nın en son teknoloji açık kaynak modelini kullanır.
-* **⚡ Vektör Arama:** ChromaDB ile kodlar arasında anlamsal arama yapar.
-* **💬 Modern Arayüz:** Streamlit ile geliştirilmiş, temiz ve kullanıcı dostu chat ekranı.
+</div>
 
 ---
 
-## 🛠 Kurulum
+## 📖 Proje Hakkında
 
-### 1. Gereksinimler
-* **Python 3.9+**
-* **Ollama** (Llama 3 modelini çalıştırmak için)
+**Repo-Chat**, GitHub üzerindeki herhangi bir kod tabanını (repository) indirip analiz eden ve **Yerel Yapay Zeka (Local LLM)** kullanarak bu kodlarla sohbet etmenizi sağlayan bir **RAG (Retrieval-Augmented Generation)** uygulamasıdır.
 
-### 2. Kurulum Adımları
+Bu proje, **veri gizliliğini** en üst düzeyde tutar. Kodlarınız 3. parti sunuculara (OpenAI, Claude vb.) gönderilmez; her şey kendi bilgisayarınızda, **RTX GPU gücüyle** işlenir.
+
+### ✨ Temel Özellikler
+
+* 🔒 **%100 Gizlilik:** Verileriniz ve kodlarınız lokal makinenizi asla terk etmez.
+* 🧠 **Llama 3 Gücü:** Meta'nın en gelişmiş açık kaynak modeli ile zeki ve bağlamı anlayan cevaplar.
+* ⚡ **Vektör Arama:** **ChromaDB** ve **HuggingFace Embeddings** ile kodlar arasında anlamsal arama.
+* 🎨 **Modern UI:** **Streamlit** ile geliştirilmiş, özelleştirilebilir ve kullanıcı dostu arayüz.
+
+---
+
+## 📂 Proje Yapısı
 
 ```bash
-# 1. Repoyu klonlayın
-git clone [https://github.com/KULLANICI_ADIN/repo-chat.git](https://github.com/KULLANICI_ADIN/repo-chat.git)
-cd repo-chat
-
-# 2. Sanal ortamı kurun
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 3. Kütüphaneleri yükleyin
-pip install -r requirements.txt
-
+repo-chat/
+├── 📂 chroma_db/          # Vektör veritabanı (Git-ignored)
+├── 📂 downloaded_repo/    # Analiz edilen repo (Git-ignored)
+├── 📂 .streamlit/         # Arayüz tema ayarları
+│   └── config.toml
+├── app.py                 # Ana Streamlit uygulaması (Chat Arayüzü)
+├── ingest.py              # Veri işleme ve veritabanı oluşturma scripti
+├── requirements.txt       # Proje bağımlılıkları
+└── README.md              # Dokümantasyon
 
 
-Harika bir fikir! 🎨 Çalışan bir sistemi "Satılabilir bir Ürüne" dönüştürmenin yolu, Kullanıcı Deneyimi (UI/UX) ve Sunumdan (README) geçer.
 
-Şu anki arayüz biraz "ham". Onu modern, ferah (beyaz tema) ve profesyonel bir Chatbot görünümüne kavuşturacağız. Ayrıca GitHub vitrinini de süsleyeceğiz.
 
-Hadi projeye son makyajı yapalım.
 
-🎨 ADIM 1: Modern ve Beyaz Tema Ayarı
-Streamlit varsayılan olarak sistem temasını (karanlık/aydınlık) kullanır. Biz bunu zorla Beyaz/Aydınlık yapacağız ve renkleri güzelleştireceğiz.
+🛠 Kurulum
+Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin.
 
-Proje klasörünün içinde .streamlit adında (başında nokta var) yeni bir klasör oluştur.
+1. Gereksinimler
+Python 3.9 veya üzeri
 
-O klasörün içine config.toml adında bir dosya oluştur.
+Git
 
-İçine şu ayarları yapıştır:
+Ollama (Modeli çalıştırmak için gereklidir. İndir)
 
-Ini, TOML
-
-[theme]
-base = "light"
-primaryColor = "#2563EB" # Profesyonel Mavi
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F0F2F6"
-textColor = "#1F2937"
-font = "sans serif"
-
-[server]
-headless = true
-(Bu ayar, sitenin her zaman bembeyaz, temiz ve kurumsal görünmesini sağlar).
-
-💅 ADIM 2: app.py Makyajı (Profesyonel UI)
-Mevcut app.py dosyanı aç ve tamamen sil. Yerine aşağıdaki geliştirilmiş kodu yapıştır.
-
-Yenilikler:
-
-Sidebar (Yan Panel): Ayarlar ve "Sohbeti Temizle" butonu eklendi.
-
-Özel CSS: Mesaj balonları (WhatsApp tarzı) eklendi.
-
-Avatar: Kullanıcı ve AI için ikonlar.
-
-Temiz Düzen: Gereksiz yazılar kaldırıldı.
-
-Python
-
-import streamlit as st
-import time
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.chat_models import ChatOllama
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
-
-# SAYFA AYARLARI
-st.set_page_config(page_title="Repo-Chat AI", page_icon="🧠", layout="centered")
-
-# ÖZEL CSS (Mesaj Balonları için)
-st.markdown("""
-<style>
-    .stChatMessage {
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .stChatMessage[data-testid="stChatMessageUser"] {
-        background-color: #E3F2FD;
-        border-left: 5px solid #2196F3;
-    }
-    .stChatMessage[data-testid="stChatMessageAssistant"] {
-        background-color: #F5F5F5;
-        border-left: 5px solid #4CAF50;
-    }
-    h1 {
-        color: #1F2937;
-        font-family: 'Helvetica', sans-serif;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------------------------------------------------
-# YAN PANEL (SIDEBAR)
-# ---------------------------------------------------------
-with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/chatbot.png", width=80)
-    st.title("Repo-Chat v1.0")
-    st.caption("🚀 Local RAG System")
-    
-    st.markdown("---")
-    st.markdown("### ⚙️ Model Bilgisi")
-    st.info("🧠 **Brain:** Llama 3 (8B)\n🗂️ **Memory:** ChromaDB")
-    
-    if st.button("🗑️ Sohbeti Temizle", type="primary"):
-        st.session_state.messages = []
-        st.rerun()
-        
-    st.markdown("---")
-    st.markdown("Developed by **Talha Kaya**")
-
-# ---------------------------------------------------------
-# RAG SİSTEMİ YÜKLEME
-# ---------------------------------------------------------
-DB_PATH = "./chroma_db"
-
-@st.cache_resource
-def load_rag_system():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    vectordb = Chroma(persist_directory=DB_PATH, embedding_function=embeddings)
-    llm = ChatOllama(model="llama3", temperature=0.1)
-    
-    template = """
-    Sen uzman bir Kıdemli Yazılım Mühendisisin.
-    Aşağıdaki kod parçalarını kullanarak kullanıcının sorusunu teknik olarak cevapla.
-    Cevabın Türkçe olsun.
-    
-    Kodlar:
-    {context}
-    
-    Soru: {question}
-    
-    Cevap:
-    """
-    QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
-    
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        retriever=vectordb.as_retriever(search_kwargs={"k": 4}),
-        chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
-        return_source_documents=True
-    )
-    return qa_chain
-
-try:
-    qa = load_rag_system()
-except Exception as e:
-    st.error(f"Sistem yüklenemedi: {e}")
-    st.stop()
-
-# ---------------------------------------------------------
-# ANA EKRAN
-# ---------------------------------------------------------
-st.title("💬 Kodlarınla Sohbet Et")
-st.caption("GitHub reponuzdaki kodları analiz eder ve sorularınızı yanıtlar.")
-
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Merhaba! Kodlarınızı inceledim. Bana mimari, fonksiyonlar veya hatalar hakkında soru sorabilirsin. 👋"}]
-
-for message in st.session_state.messages:
-    with st.chat_message(message["role"], avatar="🧑‍💻" if message["role"] == "user" else "🤖"):
-        st.markdown(message["content"])
-
-if prompt := st.chat_input("Bir soru sor..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="🧑‍💻"):
-        st.markdown(prompt)
-
-    with st.chat_message("assistant", avatar="🤖"):
-        message_placeholder = st.empty()
-        with st.spinner("Kodlar taranıyor..."):
-            result = qa.invoke({"query": prompt})
-            response = result["result"]
-            
-            sources = list(set([doc.metadata.get("source", "Bilinmiyor") for doc in result["source_documents"]]))
-            
-            full_response = f"{response}\n\n---\n**📚 Kaynak Dosyalar:**\n"
-            for src in sources:
-                # Dosya yolunu temizle (sadece dosya adı kalsın)
-                clean_src = src.split("\\")[-1].split("/")[-1]
-                full_response += f"- `{clean_src}`\n"
-            
-            message_placeholder.markdown(full_response)
-    
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
-📝 ADIM 3: requirements.txt Oluşturma
-Artık proje bittiğine göre, başkalarının da çalıştırabilmesi için kütüphane listesini çıkaralım.
-
-Terminalde:
-
+2. Kurulum Adımları
 Bash
 
-pip freeze > requirements.txt
-📄 ADIM 4: README.md (Vitrin Düzenleme)
-Projenin ana dizininde README.md adında bir dosya oluştur ve aşağıdaki Profesyonel Tanıtımı yapıştır.
-
-Markdown
-
-# 🧠 Repo-Chat: Local RAG with Llama 3
-
-![Python](https://img.shields.io/badge/Python-3.9-blue.svg)
-![LangChain](https://img.shields.io/badge/LangChain-0.3-green.svg)
-![Ollama](https://img.shields.io/badge/Model-Llama3-orange.svg)
-![Streamlit](https://img.shields.io/badge/UI-Streamlit-red.svg)
-
-**Repo-Chat**, GitHub üzerindeki herhangi bir kod tabanını indirip analiz eden ve **yerel yapay zeka (Local LLM)** kullanarak kodlarınızla sohbet etmenizi sağlayan bir RAG (Retrieval-Augmented Generation) asistanıdır.
-
-Bu proje, verilerinizi 3. parti sunuculara (OpenAI vb.) göndermeden, tamamen kendi bilgisayarınızda (Offline & Private) çalışır.
-
----
-
-## 🚀 Özellikler
-
-* **🔒 %100 Gizlilik:** Kodlarınız bilgisayarınızdan dışarı çıkmaz.
-* **🧠 Llama 3 Gücü:** Meta'nın en son teknoloji açık kaynak modelini kullanır.
-* **⚡ Vektör Arama:** ChromaDB ile kodlar arasında anlamsal arama yapar.
-* **💬 Modern Arayüz:** Streamlit ile geliştirilmiş, temiz ve kullanıcı dostu chat ekranı.
-
----
-
-## 🛠 Kurulum
-
-### 1. Gereksinimler
-* **Python 3.9+**
-* **Ollama** (Llama 3 modelini çalıştırmak için)
-
-### 2. Kurulum Adımları
-
-```bash
 # 1. Repoyu klonlayın
-git clone [https://github.com/KULLANICI_ADIN/repo-chat.git](https://github.com/KULLANICI_ADIN/repo-chat.git)
+git clone [https://github.com/talh4kaya/repo-chat.git](https://github.com/talh4kaya/repo-chat.git)
 cd repo-chat
 
-# 2. Sanal ortamı kurun
+# 2. Sanal ortam oluşturun
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 3. Kütüphaneleri yükleyin
+# 3. Sanal ortamı aktif edin
+# Windows için:
+.\venv\Scripts\activate
+# Mac/Linux için:
+# source venv/bin/activate
+
+# 4. Kütüphaneleri yükleyin
 pip install -r requirements.txt
-3. Modelin Hazırlanması (Ollama)
-Bilgisayarınızda Ollama'nın kurulu olduğundan emin olun ve terminalden modeli çekin:
+3. Modelin Hazırlanması
+Terminalde aşağıdaki komutu çalıştırarak Llama 3 modelini indirin:
 
 Bash
 
 ollama run llama3
-🏃‍♂️ Kullanım
+🚀 Kullanım
 Adım 1: Kodları Hafızaya At (Ingestion)
-Analiz etmek istediğiniz GitHub reposunu ingest.py içindeki REPO_URL kısmına yazın ve çalıştırın:
+Analiz etmek istediğiniz GitHub reposunu ingest.py dosyası içindeki REPO_URL değişkenine yazın ve çalıştırın:
 
 Bash
 
 python ingest.py
-(Bu işlem kodları indirir, parçalar ve ChromaDB veritabanına kaydeder).
+(Bu işlem kodları indirir, parçalar, vektörlere çevirir ve ChromaDB veritabanına kaydeder).
 
 Adım 2: Asistanı Başlat
+Veritabanı oluştuktan sonra arayüzü başlatın:
+
 Bash
 
 streamlit run app.py
 Tarayıcınızda açılan ekrandan kodlarınızla konuşmaya başlayabilirsiniz! 🎉
 
+🏗 Mimari ve Çalışma Mantığı
+Bu proje RAG (Retrieval-Augmented Generation) mimarisini kullanır. Veri akışı aşağıdaki gibidir:
 
----
+Ingestion (Yutma): gitpython ile repo indirilir.
 
-## 🏗 Mimari ve Çalışma Mantığı
+Splitting (Parçalama): Kod dosyaları RecursiveCharacterTextSplitter ile anlamlı parçalara bölünür.
 
-Bu proje **RAG (Retrieval-Augmented Generation)** mimarisini kullanır. İşleyiş şöyledir:
+Embedding (Gömme): Her parça HuggingFaceEmbeddings ile sayısal vektörlere dönüştürülür.
 
-1.  **Ingestion (Yutma):** `gitpython` kütüphanesi ile verilen GitHub reposu yerele indirilir.
-2.  **Splitting (Parçalama):** İndirilen kod dosyaları `RecursiveCharacterTextSplitter` ile yapay zekanın anlayabileceği küçük parçalara (chunk) bölünür.
-3.  **Embedding (Gömme):** Her bir kod parçası `HuggingFaceEmbeddings` kullanılarak sayısal vektörlere dönüştürülür.
-4.  **Vector Store (Hafıza):** Bu vektörler **ChromaDB** veritabanına kaydedilir. Burası asistanın "Uzun Süreli Hafızası"dır.
-5.  **Retrieval & Chat (Cevaplama):**
-    * Kullanıcı bir soru sorar.
-    * Sistem, veritabanından bu soruyla en alakalı kod parçalarını bulur.
-    * Bulunan kodlar ve soru, **Llama 3** modeline gönderilir.
-    * Model, kodları referans alarak cevabı üretir.
+Vector Store (Hafıza): Vektörler ChromaDB içinde saklanır.
 
-### 📊 Akış Şeması
+Retrieval & Chat: Kullanıcı sorusu ile en alakalı kod parçaları bulunur ve Llama 3 modeline gönderilir.
 
-```mermaid
+📊 Akış Şeması
+
 graph TD;
     A[GitHub Repo] -->|Clone| B(Kod Dosyaları);
     B -->|Split| C(Kod Parçacıkları);
@@ -316,13 +123,14 @@ graph TD;
     E[Kullanıcı Sorusu] -->|Search| D;
     D -->|Alakalı Kodlar| F[Llama 3 LLM];
     F -->|Cevap| G[Streamlit Arayüz];
+    style D fill:#f9f,stroke:#333,stroke-width:2px
+    style F fill:#bbf,stroke:#333,stroke-width:2px
 
 
 🤝 Katkıda Bulunma
-Bu proje açık kaynaklıdır. Pull request (PR) göndermekten veya Issue açmaktan çekinmeyin!
+Bu proje açık kaynaklıdır. Önerilerinizi ve hata bildirimlerinizi Issue açarak veya Pull Request göndererek iletebilirsiniz.
 
 📜 Lisans
 Bu proje MIT License altında lisanslanmıştır.
-
 
 <p align="center"> Developed with ❤️ by <strong>Talha Kaya</strong> </p>

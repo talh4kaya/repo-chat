@@ -289,13 +289,40 @@ Bash
 streamlit run app.py
 Tarayıcınızda açılan ekrandan kodlarınızla konuşmaya başlayabilirsiniz! 🎉
 
-🏗 Mimari
-Ingestion: gitpython ile repo indirilir.
 
-Splitting: RecursiveCharacterTextSplitter ile kodlar parçalanır.
+---
 
-Embedding: HuggingFaceEmbeddings ile vektöre çevrilir.
+## 🏗 Mimari ve Çalışma Mantığı
 
-Vector Store: ChromaDB üzerinde saklanır.
+Bu proje **RAG (Retrieval-Augmented Generation)** mimarisini kullanır. İşleyiş şöyledir:
 
-Retrieval & Chat: Kullanıcı sorusu LangChain aracılığıyla Llama 3'e iletilir ve en alakalı kod parçalarıyla birlikte cevaplanır.
+1.  **Ingestion (Yutma):** `gitpython` kütüphanesi ile verilen GitHub reposu yerele indirilir.
+2.  **Splitting (Parçalama):** İndirilen kod dosyaları `RecursiveCharacterTextSplitter` ile yapay zekanın anlayabileceği küçük parçalara (chunk) bölünür.
+3.  **Embedding (Gömme):** Her bir kod parçası `HuggingFaceEmbeddings` kullanılarak sayısal vektörlere dönüştürülür.
+4.  **Vector Store (Hafıza):** Bu vektörler **ChromaDB** veritabanına kaydedilir. Burası asistanın "Uzun Süreli Hafızası"dır.
+5.  **Retrieval & Chat (Cevaplama):**
+    * Kullanıcı bir soru sorar.
+    * Sistem, veritabanından bu soruyla en alakalı kod parçalarını bulur.
+    * Bulunan kodlar ve soru, **Llama 3** modeline gönderilir.
+    * Model, kodları referans alarak cevabı üretir.
+
+### 📊 Akış Şeması
+
+```mermaid
+graph TD;
+    A[GitHub Repo] -->|Clone| B(Kod Dosyaları);
+    B -->|Split| C(Kod Parçacıkları);
+    C -->|Embedding| D[(ChromaDB Vektör Veritabanı)];
+    E[Kullanıcı Sorusu] -->|Search| D;
+    D -->|Alakalı Kodlar| F[Llama 3 LLM];
+    F -->|Cevap| G[Streamlit Arayüz];
+
+
+🤝 Katkıda Bulunma
+Bu proje açık kaynaklıdır. Pull request (PR) göndermekten veya Issue açmaktan çekinmeyin!
+
+📜 Lisans
+Bu proje MIT License altında lisanslanmıştır.
+
+
+<p align="center"> Developed with ❤️ by <strong>Talha Kaya</strong> </p>
